@@ -1,0 +1,52 @@
+<div class="row">
+  <div class="col-6">
+    <h4>
+      <% user = User.find_by({"id" => @post["user_id"]}) %>
+      <% if user %>
+        <%= user["first_name"] %>
+      <% else %>
+        anonymous
+      <% end %>
+    </h4>
+    <img src="<%= @post["image"] %>" class="img-fluid w-full">
+    <p><%= @post["body"] %></p>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-6">
+    <h5>Comments</h5>
+
+    <% for comment in @comments %>
+      <div class="mb-2">
+        <% commenter = User.find_by({"id" => comment["user_id"]}) %>
+        <strong>
+          <% if commenter %>
+            <%= commenter["first_name"] %>
+          <% else %>
+            anonymous
+          <% end %>
+        </strong>
+        <%= comment["body"] %>
+        <% if @current_user && @current_user["id"] == comment["user_id"] %>
+          <form action="/comments/<%= comment["id"] %>" method="post" style="display:inline">
+            <input type="hidden" name="_method" value="delete">
+            <button class="btn btn-link text-danger btn-sm p-0 ms-2">delete</button>
+          </form>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @current_user %>
+      <form action="/comments" method="post" class="mt-3">
+        <input type="hidden" name="post_id" value="<%= @post["id"] %>">
+        <div class="mb-2">
+          <input type="text" name="body" placeholder="Add a comment..." class="form-control">
+        </div>
+        <button class="btn btn-primary btn-sm">Comment</button>
+      </form>
+    <% else %>
+      <p class="text-muted mt-3"><a href="/login">Log in</a> to comment.</p>
+    <% end %>
+  </div>
+</div>
